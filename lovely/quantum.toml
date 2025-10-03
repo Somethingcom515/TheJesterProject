@@ -1,0 +1,46 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# SMODS.calculate_context()
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils.lua"]'
+pattern = '''SMODS.calculate_quantum_enhancements(card, quantum_eval, context)'''
+position = "after"
+payload = '''
+JESTERPROJECT.calculate_quantum_enhancements(card, quantum_eval, context)
+JESTERPROJECT.calculate_quantum_editions(card, quantum_eval, context)
+JESTERPROJECT.calculate_quantum_seals(card, quantum_eval, context)
+'''
+match_indent = true
+times = 1
+
+# SMODS.calculate_context()
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils.lua"]'
+pattern = '''SMODS.calculate_quantum_enhancements(card, effects, context)'''
+position = "after"
+payload = '''
+JESTERPROJECT.calculate_quantum_enhancements(card, effects, context)
+JESTERPROJECT.calculate_quantum_editions(card, effects, context)
+JESTERPROJECT.calculate_quantum_seals(card, effects, context)
+'''
+match_indent = true
+times = 3
+
+# SMODS.calculate_context()
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils.lua"]'
+pattern = '''SMODS.calculate_quantum_enhancements(card, return_table, context)'''
+position = "after"
+payload = '''
+JESTERPROJECT.calculate_quantum_enhancements(card, return_table, context)
+JESTERPROJECT.calculate_quantum_editions(card, return_table, context)
+JESTERPROJECT.calculate_quantum_seals(card, return_table, context)
+'''
+match_indent = true
+times = 1

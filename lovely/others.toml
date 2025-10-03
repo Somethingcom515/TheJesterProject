@@ -1,0 +1,34 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''
+if skip and (wrap or not SMODS.Ranks[v].straight_edge) then
+	for _,w in ipairs(SMODS.Ranks[v].next) do
+		ret[#ret+1] = w
+	end
+end
+'''
+position = "at"
+payload = '''
+if type(skip) == 'number' and skip > 1 then
+    local function get_next_ranks(rank, skip, ret)
+        if skip > 0 and (wrap or not SMODS.Ranks[rank].straight_edge) then
+            for _,w in ipairs(SMODS.Ranks[rank].next) do
+                ret[#ret+1] = w
+                get_next_ranks(w, skip - 1, ret)
+            end
+        end
+    end
+    get_next_ranks(v, skip, ret)
+elseif skip and (wrap or not SMODS.Ranks[v].straight_edge) then
+    for _,w in ipairs(SMODS.Ranks[v].next) do
+        ret[#ret+1] = w
+    end
+end
+'''
+match_indent = true

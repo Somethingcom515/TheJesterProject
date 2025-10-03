@@ -1,0 +1,18 @@
+{
+	"id": "TheJesterProject",
+	"name": "The Jester Project",
+	"author": ["eightbag", "Somethingcom515"],
+	"description": "Adds a bunch of unbalanced Jokers and Blinds!",
+	"prefix": "tjp",
+	"main_file": "main.lua",
+	"priority": 200,
+	"badge_colour": "21589E",
+	"badge_text_colour": "FFFFFF",
+	"display_name": "The Jester Project",
+	"version": "1.0.0",
+	"dependencies": [
+		"Steamodded (>=1.0.0~BETA-0827)",
+		"Lovely (>=0.8.0)",
+		"Balatro (>=1.0.1o)"
+	]
+}
