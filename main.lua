@@ -380,7 +380,8 @@ SMODS.Joker{
         text = {
             'When {C:attention}Blind{} is selected,',
             'permanently add {C:attention}one fifth{}',
-            'its sell value to this {X:mult,C:white}XMult{}',
+            'of the Joker to the rights',
+            'sell value to this {X:mult,C:white}XMult{}',
             '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)',
         }
     },
@@ -1287,7 +1288,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Delay',
         text = {
-            'This Joker gains {X:mult,C:white}X#1#{} Mult',
+            'This Jester gains {X:mult,C:white}X#1#{} Mult',
             'per {C:attention}consecutive{} hand',
             'played with less than',
             '3 {C:attention}non-face{} cards',
@@ -1720,7 +1721,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Zodiac Jester',
         text = {
-            "This Joker gains",
+            "This Jester gains",
             "{X:mult,C:white} X#1# {} Mult every time",
             "a {C:attention}consumable{} is used",
             "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)",
@@ -1844,7 +1845,7 @@ SMODS.Joker{
         name = 'Emerald Jester',
         text = {
             {
-                "This Joker gains {X:mult,C:white}X#1#{} Mult",
+                "This Jester gains {X:mult,C:white}X#1#{} Mult",
                 "per {C:attention}consecutive{} hand",
                 "played without discarding",
                 "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
@@ -2098,7 +2099,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Scarlet Card',
         text = {
-            "This Joker gains",
+            "This Jester gains",
             "{X:mult,C:white}X#1#{} Mult when any",
             "{C:attention}Booster Pack{} is opened",
             "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
@@ -2194,7 +2195,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Boxed Jester',
         text = {
-            'This Joker gains {C:chips}+#1#{} Chips',
+            'This Jester gains {C:chips}+#1#{} Chips',
             'for every {C:attention}#2#{} {C:inactive}[#3#]{} cards scored',
             "{C:inactive}(Currently {C:chips}+#4#{C:inactive} Chips)",
         }
@@ -2302,7 +2303,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Dracula',
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult",
             "per scoring {C:attention}Modified card{} played,",
             'then duplicate them to hand',
             "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
@@ -2394,7 +2395,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Phantom',
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult",
             "every time the amount of cards",
             "in your full deck is {C:attention}changed{}",
             "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
@@ -2580,7 +2581,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Monolith',
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult",
             "per {C:attention}consecutive{} hand played",
             "that contains your",
             "most played {C:attention}poker hand",
@@ -2683,7 +2684,7 @@ function JESTERPROJECT:calculate(context)
                             return true
                         end
                     }))
-                end}
+                end, no_retrigger = true}
             else
                 G.GAME.tjp_champion_enabled = nil
                 G.E_MANAGER:add_event(Event({
@@ -2840,7 +2841,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Devastation',
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult for each",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult for each",
             "card below {C:attention}#3#{}",
             "in your full deck",
             'when {C:attention}Blind{} is selected',
@@ -3257,7 +3258,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Unlucky Cat',
         text = {
-            'This Joker gains {X:mult,C:white}X#1#{} Mult',
+            'This Jester gains {X:mult,C:white}X#1#{} Mult',
             'every time a {C:attention}Lucky{} card',
             'does not trigger',
             '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)',
@@ -3443,7 +3444,7 @@ SMODS.Joker{
     loc_txt = {
         name = "Memory Game",
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult",
             "per {C:attention}reroll{} in the shop",
             "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
         }
@@ -3534,7 +3535,7 @@ SMODS.Joker{
     loc_txt = {
         name = "Split Trousers",
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult",
             "if two consecutive hands",
             "contain a {C:attention}Pair{}",
             "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
@@ -3770,7 +3771,7 @@ SMODS.Joker{
     loc_txt = {
         name = "Citadel",
         text = {
-            "This Joker gains {C:chips}+#1#{} Chips",
+            "This Jester gains {C:chips}+#1#{} Chips",
             "per discarded {V:1}#2#{} card,",
             'gain doubles when a {V:1}#2#{} card is destroyed',
             "suit changes every round",
@@ -3867,7 +3868,7 @@ SMODS.Joker{
     loc_txt = {
         name = "Inferno",
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult",
             "for each card {C:attention}sold{}",
             "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)",
         }
@@ -4368,7 +4369,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Crystalline Jester',
         text = {
-            "This Joker gains {X:mult,C:white}X#1#{} Mult",
+            "This Jester gains {X:mult,C:white}X#1#{} Mult",
             "for every {C:attention}Glass Card",
             "that is destroyed, duplicate",
             'all destroyed {C:attention}Glass Cards',
@@ -4553,7 +4554,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Microscopic Jester',
         text = {
-            "This Joker gains",
+            "This Jester gains",
             "{C:chips}+#2#{} Chips when each",
             "played {C:attention}2{} or {C:attention}3{} or {C:attention}4{} is scored",
             "{C:inactive}(Currently {C:chips}+#1#{C:inactive} Chips)",
@@ -4823,7 +4824,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Titanic',
         text = {
-            "This Joker gains {X:mult,C:white} X#1# {} Mult",
+            "This Jester gains {X:mult,C:white} X#1# {} Mult",
             "for every {C:attention}Jack{} discarded",
             "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)",
         }
@@ -4990,7 +4991,7 @@ SMODS.Joker{
     key = 'spacecraft',
     atlas = 'Jesters',
     pos = G.P_CENTERS.j_satellite.pos,
-    rarity = 1,
+    rarity = 2,
     eternal_compat = true,
     perishable_compat = true,
     blueprint_compat = true,
@@ -5212,7 +5213,7 @@ SMODS.Joker{
     loc_txt = {
         name = "Can'tio",
         text = {
-            "This Joker gains {X:mult,C:white} X#1# {} Mult",
+            "This Jester gains {X:mult,C:white} X#1# {} Mult",
             "when a {C:attention}face{} card",
             "is discarded",
             "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)",
@@ -5294,7 +5295,7 @@ SMODS.Joker{
     loc_txt = {
         name = "Yorickn't",
         text = {
-            "This Joker gains",
+            "This Jester gains",
             "{X:mult,C:white} X#1# {} Mult every {C:attention}#2#{C:inactive} [#3#]{}",
             "cards discarded",
             "{C:inactive}(Currently {X:mult,C:white} X#4# {C:inactive} Mult)",
