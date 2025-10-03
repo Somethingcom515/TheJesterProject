@@ -3368,7 +3368,7 @@ SMODS.Joker{
         text = {
             "Sell this card to",
             "create {C:attention}#1#{} of the tag of",
-            "the current blind"
+            "the current or next blind"
         }
     },
     config = {extra = {tags = 5}},
@@ -3376,11 +3376,21 @@ SMODS.Joker{
         return {vars = {card.ability.extra.tags}}
     end,
     calculate = function(self, card, context)
-        if context.selling_self and G.GAME.blind.in_blind then
+        if context.selling_self then
+            local nextblind
+            if not G.GAME.blind.in_blind then
+                for k, v in pairs(G.GAME.round_resets.blind_states) do
+                    if v == 'Select' then
+                        nextblind = k
+                        break
+                    end
+                end
+                if not nextblind then return nil end
+            end
             return {func = function()
                 JESTERPROJECT.event(function()
                     for i=1, card.ability.extra.tags do
-                        local _tag = Tag(G.GAME.round_resets.blind_tags[G.GAME.blind:get_type()])
+                        local _tag = Tag(G.GAME.round_resets.blind_tags[nextblind or G.GAME.blind:get_type()])
                         _tag:set_ability()
                         add_tag(_tag)
                     end
