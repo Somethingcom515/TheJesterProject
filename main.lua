@@ -272,9 +272,6 @@ function SMODS.four_fingers(hand_type)
     if SMODS.find_card('j_tjp_onefinger')[1] then
         return math.min(oldsmodsfourfingers(hand_type), 1)
     end
-    if SMODS.find_card('j_tjp_express')[1] then
-        return math.min(oldsmodsfourfingers(hand_type), 3)
-    end
     return oldsmodsfourfingers(hand_type)
 end
 
@@ -613,7 +610,7 @@ SMODS.Joker{
         name = 'Defect',
         text = {
             '{X:mult,C:white}X#1#-#2#{} Mult',
-            'cap raises by #3# when a joker is {C:attention}sold{}'
+            'cap raises by #3# when a Joker is {C:attention}sold{}'
         }
     },
     config = {extra = {min = 1, max = 15, increase = 1}},
@@ -4626,29 +4623,21 @@ function SMODS.get_probability_vars(trigger_obj, base_numerator, base_denominato
 	return oldsmodsgetprobabilityvars(trigger_obj, base_numerator, base_denominator, identifier, from_roll, no_mod)
 end
 
-local oldevalcard = eval_card
-function eval_card(card, context)
-    local g, post = oldevalcard(card, context)
-    if context.retrigger_joker_check and context.other_card == card then
-        if SMODS.find_card('j_tjp_oopsallnaneinfs')[1] and SMODS.post_prob and SMODS.post_prob[1] then
-            local passed = false
-            for _, v in ipairs(SMODS.post_prob) do
-                if v.trigger_obj == card then
-                    passed = true
-                    break
-                end
-            end
-            if passed then
-                local effects = {}
-                if table.contains(SMODS.get_card_areas('jokers'), card.area) then
-                    if g.jokers then table.insert(effects, g.jokers) end
-                    table.insert(effects, {message = localize('k_again_ex'), repetitions = #SMODS.find_card('j_tjp_oopsallnaneinfs'), message_card = card})
-                    g.jokers = SMODS.merge_effects(effects)
-                end
-            end
-        end
-    end
-    return g, post
+local oldsmodspseudorandomprobability = SMODS.pseudorandom_probability
+function SMODS.pseudorandom_probability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
+	if SMODS.find_card('j_tjp_oopsallnaneinfs')[1] and not no_mod then
+		SMODS.post_prob = SMODS.post_prob or {}
+		SMODS.post_prob[#SMODS.post_prob + 1] = {
+			pseudorandom_result = true,
+			result = true,
+			trigger_obj = trigger_obj,
+			numerator = base_denominator,
+			denominator = base_denominator,
+			identifier = identifier or seed,
+		}
+		return true
+	end
+	return oldsmodspseudorandomprobability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
 end
 
 SMODS.Joker{
@@ -4666,6 +4655,20 @@ SMODS.Joker{
             "are {C:attention}guaranteed{} and {C:attention}retriggered{}", -- Only retriggers jokers
         }
     },
+    calculate = function (self, card, context)
+        if (context.repetition or context.retrigger_joker_check) and SMODS.post_prob and SMODS.post_prob[1] then
+            local passed = false
+            for _, v in ipairs(SMODS.post_prob) do
+                if v.trigger_obj == context.other_card then
+                    passed = true
+                    break
+                end
+            end
+            if passed then
+                return {repetitions = 1}
+            end
+        end
+    end
 }
 
 local function reset_tjp_thetotem_card()
