@@ -26,7 +26,7 @@ end
 local configoptions = {}
 
 configoptions[#configoptions + 1] = create_toggle({
-    label = "Disable Vanilla Jokers and Blinds (Requires Restart)",
+    label = "Disable Vanilla Jokers and Boss Blinds (Requires Restart)",
     ref_table = JESTERPROJECT.config,
     ref_value = "novanilla",
     callback = function()
@@ -48,23 +48,15 @@ JESTERPROJECT.config_tab = function()
 end
 
 if JESTERPROJECT.config.novanilla then
-    local oldsmodsinjectitems = SMODS.injectItems
-    function SMODS.injectItems()
-        local g = oldsmodsinjectitems()
-        for _, v in ipairs({G.P_CENTER_POOLS.Joker, G.P_BLINDS}) do
-            for _, vv in pairs(v) do
-                if not vv.mod then
-                    if not getmetatable(vv) then
-                        setmetatable(vv, {__index = {in_pool = function() return false end}})
-                    elseif not getmetatable(vv).__index or type(getmetatable(vv).__index) == 'table' then
-                        getmetatable(vv).__index = getmetatable(vv).__index or {}
-                        getmetatable(vv).__index.in_pool = function() return false end
-                    end
-                    vv.no_collection = true
-                end 
-            end
+    for _, v in ipairs({G.P_CENTER_POOLS.Joker, G.P_BLINDS}) do
+        for _, vv in pairs(v) do
+            if not vv.mod and (vv.set == 'Joker' or vv.boss) then
+                (vv.set == 'Joker' and SMODS.Joker or SMODS.Blind):take_ownership(vv.key, {
+                    in_pool = function() return false end,
+                    no_collection = true
+                }, true)
+            end 
         end
-        return g
     end
 end
 
