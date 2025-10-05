@@ -54,7 +54,12 @@ if JESTERPROJECT.config.novanilla then
         for _, v in ipairs({G.P_CENTER_POOLS.Joker, G.P_BLINDS}) do
             for _, vv in pairs(v) do
                 if not vv.mod then
-                    vv.in_pool = function() return false end
+                    if not getmetatable(vv) then
+                        setmetatable(vv, {__index = {in_pool = function() return false end}})
+                    elseif not getmetatable(vv).__index or type(getmetatable(vv).__index) == 'table' then
+                        getmetatable(vv).__index = getmetatable(vv).__index or {}
+                        getmetatable(vv).__index.in_pool = function() return false end
+                    end
                     vv.no_collection = true
                 end 
             end
