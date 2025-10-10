@@ -3479,18 +3479,18 @@ SMODS.Joker{
     loc_txt = {
         name = "Caramel Corn",
         text = {
-            "{X:mult,C:white}X#1#{} Mult",
-            "{X:mult,C:white}-X#2#{} Mult per",
+            "{C:mult}+#1#{} Mult",
+            "{C:mult}-+#2#{} Mult per",
             "round played",
         }
     },
-    config = {extra = {xmult = 20, xmult_loss = 4}},
+    config = {extra = {mult = 150, mult_loss = 50}},
     loc_vars = function (self, info_queue, card)
         return {vars = {card.ability.extra.xmult, card.ability.extra.xmult_loss}}
     end,
     calculate = function(self, card, context)
         if context.end_of_round and context.game_over == false and context.main_eval and not context.blueprint then
-            if card.ability.extra.xmult - card.ability.extra.xmult_loss <= 0 then
+            if card.ability.extra.mult - card.ability.extra.mult_loss <= 0 then
                 SMODS.destroy_cards(card, nil, nil, true)
                 return {
                     message = localize('k_eaten_ex'),
@@ -3499,20 +3499,20 @@ SMODS.Joker{
             else
                 SMODS.scale_card(card, {
                     ref_table = card.ability.extra,
-                    ref_value = "xmult",
-                    scalar_value = "xmult_loss",
+                    ref_value = "mult",
+                    scalar_value = "mult_loss",
                     operation = "-",
                     no_message = true
                 })
                 return {
-                    message = localize { type = 'variable', key = 'a_xmult_minus', vars = { card.ability.extra.xmult_loss } },
+                    message = localize { type = 'variable', key = 'a_mult_minus', vars = { card.ability.extra.mult_loss } },
                     colour = G.C.MULT
                 }
             end
         end
         if context.joker_main then
             return {
-                xmult = card.ability.extra.xmult
+                mult = card.ability.extra.mult
             }
         end
     end
