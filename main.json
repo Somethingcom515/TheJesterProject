@@ -11,7 +11,7 @@
 	"display_name": "The Jester Project",
 	"version": "1.0.0",
 	"dependencies": [
-		"Steamodded (>=1.0.0~BETA-0827)",
+		"Steamodded (>=1.0.0~BETA-1016c)",
 		"Lovely (>=0.8.0)",
 		"Balatro (>=1.0.1o)"
 	]

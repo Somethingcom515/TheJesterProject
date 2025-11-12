@@ -507,7 +507,7 @@ SMODS.Joker{
     calculate = function (self, card, context)
         if context.before then
             local effects = {}
-            for i=1, 3 do
+            for _=1, 3 do
                 table.insert(effects, {
                     func = function()
                         local stone_card = SMODS.add_card({set = "Base", enhancement = "m_stone", area = G.hand})
@@ -2241,7 +2241,7 @@ SMODS.Joker{
     calculate = function (self, card, context)
         if context.before and (next(context.poker_hands['Straight']) or next(context.poker_hands['Flush'])) then
             return {func = function()
-                for i=1, card.ability.extra.spectrals do
+                for _=1, card.ability.extra.spectrals do
                     JESTERPROJECT.event(function()
                         SMODS.add_card({set = 'Spectral'})
                         SMODS.calculate_effect({message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral, instant = true}, card)
@@ -2273,7 +2273,7 @@ SMODS.Joker{
     calculate = function (self, card, context)
         if context.setting_blind then
             return {func = function()
-                for i=1, math.floor(#G.jokers.cards/4) do
+                for _=1, math.floor(#G.jokers.cards/4) do
                     JESTERPROJECT.event(function()
                         SMODS.add_card({set = 'Joker', edition = 'e_negative'})
                         SMODS.calculate_effect({message = localize('k_plus_joker'), instant = true}, card)
@@ -3375,7 +3375,7 @@ SMODS.Joker{
             local nextblind
             if not G.GAME.blind.in_blind then
                 for k, v in pairs(G.GAME.round_resets.blind_states) do
-                    if v == 'Select' then
+                    if k ~= 'Boss' and v == 'Select' then
                         nextblind = k
                         break
                     end
@@ -3384,7 +3384,7 @@ SMODS.Joker{
             end
             return {func = function()
                 JESTERPROJECT.event(function()
-                    for i=1, card.ability.extra.tags do
+                    for _=1, card.ability.extra.tags do
                         local _tag = Tag(G.GAME.round_resets.blind_tags[nextblind or G.GAME.blind:get_type()])
                         _tag:set_ability()
                         add_tag(_tag)
@@ -3480,7 +3480,7 @@ SMODS.Joker{
         name = "Caramel Corn",
         text = {
             "{C:mult}+#1#{} Mult",
-            "{C:mult}-+#2#{} Mult per",
+            "{C:mult}-#2#{} Mult per",
             "round played",
         }
     },
@@ -5124,7 +5124,7 @@ SMODS.Joker{
 local oldsetcost = Card.set_cost
 function Card:set_cost()
     local g = oldsetcost(self)
-    if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.config.center.kind == 'Celestial')) and next(SMODS.find_card("j_tjp_cosmologist")) then self.cost = -7 end
+    if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.config.center.kind == 'Celestial')) and SMODS.find_card("j_tjp_cosmologist")[1] then self.cost = -7 end
     return g
 end
 
@@ -6207,7 +6207,7 @@ SMODS.Blind{
 
 local oldcalcjoker = Card.calculate_joker
 function Card:calculate_joker(context)
-    if G.GAME.blind.config.blind.key == 'bl_tjp_chestnutclub' and self.tjp_chestnutclub_joker then
+    if G.GAME and G.GAME.blind and G.GAME.blind.config.blind.key == 'bl_tjp_chestnutclub' and self.tjp_chestnutclub_joker then
         local ret, post = oldcalcjoker(self.tjp_chestnutclub_joker, context)
         if ret then
             ret.card = self
