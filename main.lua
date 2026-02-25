@@ -395,11 +395,10 @@ SMODS.Joker{
             if my_pos and G.jokers.cards[my_pos + 1] then
                 local sliced_card = G.jokers.cards[my_pos + 1]
                 JESTERPROJECT.event(function()
-                    local scalar = {value = sliced_card.sell_cost/5}
                     SMODS.scale_card(card, {
                         ref_table = card.ability.extra,
                         ref_value = 'xmult',
-                        scalar_table = scalar,
+                        scalar_table = {value = sliced_card.sell_cost/5},
                         scalar_value = 'value',
                         no_message = true
                     })
@@ -1048,11 +1047,10 @@ SMODS.Joker{
         if context.end_of_round and context.main_eval and not context.blueprint then
             local effects = {}
             if SMODS.pseudorandom_probability(card, self.key, 1, card.ability.extra.odds1) then
-                local scalar = {value = 2}
                 SMODS.scale_card(card, {
                     ref_table = card.ability.extra,
                     ref_value = 'xmult',
-                    scalar_table = scalar,
+                    scalar_table = {value = 2},
                     scalar_value = 'value',
                     operation = 'X',
                     no_message = true
@@ -1172,11 +1170,10 @@ SMODS.Joker{
                 })
                 return {message = localize('k_upgrade_ex'), colour = G.C.MULT}
             elseif card.ability.extra.xmult > 1 then
-                local scalar = {value = (-card.ability.extra.xmult)+math.max(card.ability.extra.xmult-card.ability.extra.xmult_loss, 1)}
                 SMODS.scale_card(card, {
                     ref_table = card.ability.extra,
                     ref_value = 'xmult',
-                    scalar_table = scalar,
+                    scalar_table = {value = (-card.ability.extra.xmult)+math.max(card.ability.extra.xmult-card.ability.extra.xmult_loss, 1)},
                     scalar_value = 'value',
                     no_message = true
                 })
@@ -1375,9 +1372,9 @@ SMODS.Joker{
         if context.end_of_round and context.main_eval then
             SMODS.scale_card(card, {
                 ref_table = card.ability,
-                ref_value = "extra_value",
-                scalar_table = card,
-                scalar_value = "sell_cost",
+                ref_value = 'extra_value',
+                scalar_table = {value = card.sell_cost/2},
+                scalar_value = 'value',
                 no_message = true
             })
             card:set_cost()
@@ -1494,11 +1491,10 @@ SMODS.Joker{
     calculate = function(self, card, context)
         if context.before then
             local straights = get_straight(G.hand.cards, SMODS.four_fingers('straight'), SMODS.shortcut(), SMODS.wrap_around_straight())
-            local scalar = {value = #straights*card.ability.extra.chip_gain}
             SMODS.scale_card(card, {
                 ref_table = card.ability.extra,
                 ref_value = "chips",
-                scalar_table = scalar,
+                scalar_table = {value = #straights*card.ability.extra.chip_gain},
                 scalar_value = "value",
                 no_message = true
             })
@@ -1539,11 +1535,10 @@ SMODS.Joker{
                     colour = G.C.CHIPS
                 }
             else
-                local scalar = {value = card.ability.extra.chip_loss*#context.full_hand}
                 SMODS.scale_card(card, {
                     ref_table = card.ability.extra,
                     ref_value = "chips",
-                    scalar_table = scalar,
+                    scalar_table = {value = card.ability.extra.chip_loss*#context.full_hand},
                     scalar_value = "value",
                     operation = "-",
                     no_message = true
@@ -1652,11 +1647,10 @@ SMODS.Joker{
     end,
     calculate = function(self, card, context)
         if context.end_of_round and context.main_eval then
-            local scalar = {value = card.ability.extra.chip_gain*#G.deck.cards}
             SMODS.scale_card(card, {
                 ref_table = card.ability.extra,
                 ref_value = "chips",
-                scalar_table = scalar,
+                scalar_table = {value = card.ability.extra.chip_gain*#G.deck.cards},
                 scalar_value = "value",
                 no_message = true
             })
@@ -2006,7 +2000,7 @@ SMODS.Joker{
     loc_vars = function (self, info_queue, card)
         local numerator1, denominator1 = SMODS.get_probability_vars(card, 1, card.ability.extra.odds1, self.key)
         local numerator2, denominator2 = SMODS.get_probability_vars(card, 9999999, card.ability.extra.odds2, self.key)
-        return {vars = {card.ability.extra.xmult, numerator1, denominator1, numerator2, denominator2, card.ability.extra.multiply}}
+        return {vars = {card.ability.extra.xmult, numerator1, denominator1, number_format(numerator2), number_format(denominator2), card.ability.extra.multiply}}
     end,
     calculate = function (self, card, context)
         if context.end_of_round and context.main_eval and not context.blueprint then
@@ -2316,11 +2310,10 @@ SMODS.Joker{
                 end
             end
             if #cards > 0 then
-                local scalar = {value = card.ability.extra.xmult_gain*#cards}
                 SMODS.scale_card(card, {
                     ref_table = card.ability.extra,
                     ref_value = "xmult",
-                    scalar_table = scalar,
+                    scalar_table = {value = card.ability.extra.xmult_gain*#cards},
                     scalar_value = "value",
                     no_message = true
                 })
@@ -2663,22 +2656,20 @@ function JESTERPROJECT:calculate(context)
         if context.setting_blind and context.blind.boss then
             if SMODS.pseudorandom_probability(self, 'j_tjp_champion', G.GAME.tjp_champion_enabled.numerator, G.GAME.tjp_champion_enabled.denominator) then
                 G.GAME.tjp_champion_enabled.numerator = G.GAME.tjp_champion_enabled.numerator - G.GAME.tjp_champion_enabled.decrease
-                return {func = function()
-                    G.E_MANAGER:add_event(Event({
-                        func = function()
-                            G.E_MANAGER:add_event(Event({
-                                func = function()
-                                    G.GAME.blind:disable()
-                                    play_sound('timpani')
-                                    delay(0.4)
-                                    return true
-                                end
-                            }))
-                            SMODS.calculate_effect({message = localize('ph_boss_disabled')}, G.GAME.blind.children.animatedSprite)
-                            return true
-                        end
-                    }))
-                end, no_retrigger = true}
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.E_MANAGER:add_event(Event({
+                            func = function()
+                                G.GAME.blind:disable()
+                                play_sound('timpani')
+                                delay(0.4)
+                                return true
+                            end
+                        }))
+                        SMODS.calculate_effect({message = localize('ph_boss_disabled')}, G.GAME.blind.children.animatedSprite)
+                        return true
+                    end
+                }))
             else
                 G.GAME.tjp_champion_enabled = nil
                 G.E_MANAGER:add_event(Event({
@@ -2715,8 +2706,26 @@ SMODS.Joker{
     end,
     calculate = function (self, card, context)
         if context.selling_self then
+            local wasenabled = G.GAME.tjp_champion_enabled
             G.GAME.tjp_champion_enabled = card.ability.extra
-            return {message = 'Enabled!'}
+            if G.GAME.blind and G.GAME.blind.boss and not G.GAME.blind.disabled then
+                if SMODS.pseudorandom_probability(card, self.key, G.GAME.tjp_champion_enabled.numerator, G.GAME.tjp_champion_enabled.denominator) then
+                    G.GAME.tjp_champion_enabled.numerator = G.GAME.tjp_champion_enabled.numerator - G.GAME.tjp_champion_enabled.decrease
+                    return {message = localize('ph_boss_disabled'), func = function() G.GAME.blind:disable() end}
+                else
+                    G.GAME.tjp_champion_enabled = nil
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            SMODS.calculate_effect({message = 'Faliure!'}, G.GAME.blind.children.animatedSprite)
+                            return true
+                        end
+                    }))
+                end
+            elseif wasenabled then
+                return {message = localize('k_reset')..'!'}
+            else
+                return {message = 'Enabled!'}
+            end
         end
     end
 }
@@ -2848,11 +2857,10 @@ SMODS.Joker{
     end,
     calculate = function(self, card, context)
         if context.setting_blind then
-            local scalar = {value = card.ability.extra.xmult_gain*(G.GAME.starting_deck_size - #G.playing_cards)}
             SMODS.scale_card(card, {
                 ref_table = card.ability.extra,
                 ref_value = "xmult",
-                scalar_table = scalar,
+                scalar_table = {value = card.ability.extra.xmult_gain*(G.GAME.starting_deck_size - #G.playing_cards)},
                 scalar_value = "value",
                 no_message = true
             })
@@ -3486,7 +3494,7 @@ SMODS.Joker{
     },
     config = {extra = {mult = 150, mult_loss = 50}},
     loc_vars = function (self, info_queue, card)
-        return {vars = {card.ability.extra.xmult, card.ability.extra.xmult_loss}}
+        return {vars = {card.ability.extra.mult, card.ability.extra.mult_loss}}
     end,
     calculate = function(self, card, context)
         if context.end_of_round and context.game_over == false and context.main_eval and not context.blueprint then
@@ -3641,11 +3649,10 @@ SMODS.Joker{
                 SMODS.destroy_cards(card, nil, nil, true)
                 return {message = localize('k_eaten_ex')}
             else
-                local scalar = {value = card.ability.extra.xmult_loss*G.GAME.current_round.discards_left}
                 SMODS.scale_card(card, {
                     ref_table = card.ability.extra,
                     ref_value = "xmult",
-                    scalar_table = scalar,
+                    scalar_table = {value = card.ability.extra.xmult_loss*G.GAME.current_round.discards_left},
                     scalar_value = "value",
                     operation = "-",
                     no_message = true
@@ -4622,19 +4629,23 @@ end
 
 local oldsmodspseudorandomprobability = SMODS.pseudorandom_probability
 function SMODS.pseudorandom_probability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
-	if SMODS.find_card('j_tjp_oopsallnaneinfs')[1] and not no_mod then
-		SMODS.post_prob = SMODS.post_prob or {}
-		SMODS.post_prob[#SMODS.post_prob + 1] = {
-			pseudorandom_result = true,
-			result = true,
-			trigger_obj = trigger_obj,
-			numerator = base_denominator,
-			denominator = base_denominator,
-			identifier = identifier or seed,
-		}
-		return true
-	end
-	return oldsmodspseudorandomprobability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
+    if SMODS.find_card('j_tjp_oopsallnaneinfs')[1] then
+        JESTERPROJECT.poster_prob = JESTERPROJECT.poster_prob or {}
+        JESTERPROJECT.poster_prob[#JESTERPROJECT.poster_prob+1] = trigger_obj
+        if not no_mod then
+            SMODS.post_prob = SMODS.post_prob or {}
+            SMODS.post_prob[#SMODS.post_prob+1] = {
+                pseudorandom_result = true,
+                result = true,
+                trigger_obj = trigger_obj,
+                numerator = base_denominator,
+                denominator = base_denominator,
+                identifier = identifier or seed,
+            }
+            return true
+        end
+    end
+    return oldsmodspseudorandomprobability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
 end
 
 SMODS.Joker{
@@ -4649,21 +4660,20 @@ SMODS.Joker{
         name = 'Oops! All naneinfs',
         text = {
             "All {C:attention}listed {C:green,E:1,S:1.1}probabilities{}",
-            "are {C:attention}guaranteed{} and {C:attention}retriggered{}", -- Only retriggers jokers
+            "are {C:attention}guaranteed{} and {C:attention}retriggered{}",
         }
     },
-    calculate = function (self, card, context)
-        if (context.repetition or context.retrigger_joker_check) and SMODS.post_prob and SMODS.post_prob[1] then
-            local passed = false
-            for _, v in ipairs(SMODS.post_prob) do
-                if v.trigger_obj == context.other_card then
-                    passed = true
-                    break
+    calculate = function(self, card, context)
+        if (context.repetition or context.retrigger_joker_check) and JESTERPROJECT.poster_prob and JESTERPROJECT.poster_prob[1] then
+            for i=#JESTERPROJECT.poster_prob, 1, -1 do
+                if JESTERPROJECT.poster_prob[i] == context.other_card then
+                    table.remove(JESTERPROJECT.poster_prob, i)
+                    return {repetitions = 1}
                 end
             end
-            if passed then
-                return {repetitions = 1}
-            end
+        end
+        if context.before or context.after then
+            EMPTY(JESTERPROJECT.poster_prob)
         end
     end
 }
@@ -5108,14 +5118,14 @@ SMODS.Joker{
     calculate = function(self, card, context)
         if context.setting_blind then
             return {func = function()
-                JESTERPROJECT.event(function()
-                    for _=1, 3 do
+                for _=1, 3 do
+                    JESTERPROJECT.event(function()
                         SMODS.add_card({set = 'Tarot', edition = 'e_negative'})
                         SMODS.calculate_effect({message = localize('k_plus_tarot'), colour = G.C.SECONDARY_SET.Tarot, instant = true}, card)
-                    end
-                    return true
-                end)
-                delay(0.9375)
+                        return true
+                    end)
+                    delay(0.9375)
+                end
             end}
         end
     end
@@ -5228,7 +5238,7 @@ SMODS.Joker{
             SMODS.scale_card(card, {
                 ref_table = card.ability.extra,
                 ref_value = "xmult",
-                scalar_value = "xmult_gain",
+                scalar_value = 'xmult_gain',
                 no_message = true
             })
             return { message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } } }
@@ -5354,17 +5364,18 @@ SMODS.Joker{
     },
     calculate = function(self, card, context)
         if context.ending_shop and G.jokers.cards[1] then
-            G.E_MANAGER:add_event(Event({
-                func = function()
-                    local card_to_copy, _ = pseudorandom_element(G.jokers.cards, self.key)
+            return {func = function()
+                JESTERPROJECT.event(function()
+                    SMODS.calculate_effect({message = localize('k_duplicated_ex'), instant = true}, card)
+                    local card_to_copy = pseudorandom_element(G.jokers.cards, self.key)
                     local copied_card = copy_card(card_to_copy)
-                    copied_card:set_edition("e_negative", true)
+                    copied_card:set_edition('e_negative', true)
                     copied_card:add_to_deck()
                     G.jokers:emplace(copied_card)
                     return true
-                end
-            }))
-            return { message = localize('k_duplicated_ex') }
+                end)
+                delay(0.9375)
+            end}
         end
     end
 }
@@ -6224,7 +6235,7 @@ function CardArea:load(cardAreaTable)
         for _, v in ipairs(self.cards) do
             if v.ability.tjp_chestnutclub_joker then
                 for  _, v2 in ipairs(self.cards) do
-                    if v.ability.tjp_chestnutclub_joker == v2.sort_id then
+                    if v.ability.tjp_chestnutclub_joker == v2.unique_val then
                         v.tjp_chestnutclub_joker = v2
                         break
                     end
@@ -6263,7 +6274,7 @@ SMODS.Blind{
                             func = function()
                                 G.E_MANAGER:add_event(Event({
                                     func = function()
-                                        G.jokers:shuffle('aajk')
+                                        G.jokers:shuffle('ccjk')
                                         play_sound('cardSlide1', 0.85)
                                         return true
                                     end,
@@ -6271,7 +6282,7 @@ SMODS.Blind{
                                 delay(0.15)
                                 G.E_MANAGER:add_event(Event({
                                     func = function()
-                                        G.jokers:shuffle('aajk')
+                                        G.jokers:shuffle('ccjk')
                                         play_sound('cardSlide1', 1.15)
                                         return true
                                     end
@@ -6279,7 +6290,7 @@ SMODS.Blind{
                                 delay(0.15)
                                 G.E_MANAGER:add_event(Event({
                                     func = function()
-                                        G.jokers:shuffle('aajk')
+                                        G.jokers:shuffle('ccjk')
                                         play_sound('cardSlide1', 1)
                                         return true
                                     end
@@ -6293,7 +6304,7 @@ SMODS.Blind{
                     pseudoshuffle(jokers_to_copy, self.key)
                     for i, v in ipairs(G.jokers.cards) do
                         v.tjp_chestnutclub_joker = jokers_to_copy[i]
-                        v.ability.tjp_chestnutclub_joker = jokers_to_copy[i].sort_id
+                        v.ability.tjp_chestnutclub_joker = jokers_to_copy[i].unique_val
                     end
                 end
             end
@@ -6302,7 +6313,7 @@ SMODS.Blind{
                 pseudoshuffle(jokers_to_copy, self.key)
                 for i, v in ipairs(G.jokers.cards) do
                     v.tjp_chestnutclub_joker = jokers_to_copy[i]
-                    v.ability.tjp_chestnutclub_joker = jokers_to_copy[i].sort_id
+                    v.ability.tjp_chestnutclub_joker = jokers_to_copy[i].unique_val
                     SMODS.calculate_effect({message = localize('k_reset')}, v)
                 end
             end
@@ -6395,7 +6406,7 @@ SMODS.Blind{
             end
             if context.hand_drawn and G.jokers.cards[1] then
                 local jokers = SMODS.shallow_copy(G.jokers.cards)
-                for i=1, math.floor(#G.jokers.cards/2) do
+                for _=1, math.floor(#G.jokers.cards/2) do
                     local joker, index = pseudorandom_element(jokers, self.key)
                     table.remove(jokers, index)
                     joker:set_debuff(true)
@@ -6451,7 +6462,7 @@ function JESTERPROJECT.set_debuff(card)
     end
 end
 
-function JESTERPROJECT.reset_game_globals(run_start)
+function JESTERPROJECT.reset_game_globals()
     reset_tjp_improv_ranks()
     reset_tjp_prehistoricjester_suit()
     reset_tjp_citadel_suit()

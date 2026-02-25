@@ -230,7 +230,7 @@ function JESTERPROJECT.calculate_quantum_editions(card, effects, context)
             end
             card.edition = cardedition
             card.ability.extra_edition = ed_key
-            G.GAME.triggered_edition = {card.sort_id, ed_key}
+            G.GAME.triggered_edition = {card.unique_val, ed_key}
             local eval = {edition = card:calculate_edition(context)}
             G.GAME.triggered_edition = nil
             table.insert(effects, eval)
@@ -258,9 +258,9 @@ end
 function JESTERPROJECT.get_enhancements(card, extra_only)
     if not card then return {} end
     local enhancements = {}
-    if SMODS.find_card('j_tjp_delusion')[1] and card.config.center.key ~= 'm_steel' then table.insert(enhancements, 'm_steel') end
-    if SMODS.find_card('j_tjp_illegiblejester')[1] and card.config.center.key ~= 'm_wild' then table.insert(enhancements, 'm_wild') end
-    if not extra_only and card.config.center.key ~= "c_base" then table.insert(enhancements, 1, card.config.center.key) end
+    if SMODS.find_card('j_tjp_delusion')[1] and card.config.center_key ~= 'm_steel' then table.insert(enhancements, 'm_steel') end
+    if SMODS.find_card('j_tjp_illegiblejester')[1] and card.config.center_key ~= 'm_wild' then table.insert(enhancements, 'm_wild') end
+    if not extra_only and card.config.center_key ~= "c_base" then table.insert(enhancements, 1, card.config.center_key) end
     return enhancements
 end
 
@@ -275,7 +275,7 @@ function JESTERPROJECT.calculate_quantum_enhancements(card, effects, context)
     for _, k in ipairs(extra_enhancements_list) do
         JESTERPROJECT.safe_set_ability(card, G.P_CENTERS[k])
         card.ability.extra_enhancement = k
-        G.GAME.triggered_enhancement = {card.sort_id, k}
+        G.GAME.triggered_enhancement = {card.unique_val, k}
         local eval = eval_card(card, context)
         G.GAME.triggered_enhancement = nil
         table.insert(effects, eval)
@@ -293,8 +293,8 @@ function JESTERPROJECT.get_seals(card, extra_only)
     return seals
 end
 
-local oldsealdrawstepfunc = SMODS.DrawSteps["seal"].func
-SMODS.DrawSteps["seal"].func = function(self, layer)
+local oldsealdrawstepfunc = SMODS.DrawSteps.seal.func
+SMODS.DrawSteps.seal.func = function(self, layer)
     local oldseal = self.seal
     if self.drawseal then self.seal = self.drawseal ~= 'none' and self.drawseal or nil end
     local g = oldsealdrawstepfunc(self, layer)
@@ -383,9 +383,9 @@ function JESTERPROJECT.safe_set_ability(self, center, dontsave)
     local config
     if not dontsave then
         G.GAME.tjp_savedjokervalues = G.GAME.tjp_savedjokervalues or {}
-        G.GAME.tjp_savedjokervalues[self.sort_id] = G.GAME.tjp_savedjokervalues[self.sort_id] or {}
-        G.GAME.tjp_savedjokervalues[self.sort_id][oldcenter.key] = copy_table(self.ability)
-        config = G.GAME.tjp_savedjokervalues[self.sort_id][center.key] or center.config
+        G.GAME.tjp_savedjokervalues[self.unique_val] = G.GAME.tjp_savedjokervalues[self.unique_val] or {}
+        G.GAME.tjp_savedjokervalues[self.unique_val][oldcenter.key] = copy_table(self.ability)
+        config = G.GAME.tjp_savedjokervalues[self.unique_val][center.key] or center.config
     else
         config = center.config
     end
@@ -469,7 +469,7 @@ function EventManager:add_event(event, queue, front)
             local card, key, g
             local triggered = G.GAME.triggered_enhancement or G.GAME.triggered_joker
             for k, v in ipairs(G.I.CARD) do
-                if v.sort_id == triggered[1] then
+                if v.unique_val == triggered[1] then
                     card, key = v, triggered[2]
                 end
             end
@@ -478,7 +478,7 @@ function EventManager:add_event(event, queue, front)
                 local old_ability = copy_table(card.ability)
                 local old_center = card.config.center
                 local old_center_key = card.config.center_key
-                SEALS.safe_set_ability(card, G.P_CENTERS[key])
+                JESTERPROJECT.safe_set_ability(card, G.P_CENTERS[key])
                 g = oldeventfunc()
                 card.ability = old_ability
                 card.config.center = old_center
@@ -488,7 +488,7 @@ function EventManager:add_event(event, queue, front)
         elseif G.GAME.triggered_edition then
             local card, key, g
             for k, v in ipairs(G.I.CARD) do
-                if v.sort_id == G.GAME.triggered_edition[1] then
+                if v.unique_val == G.GAME.triggered_edition[1] then
                     card, key = v, G.GAME.triggered_edition[2]
                 end
             end
